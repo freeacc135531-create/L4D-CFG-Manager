@@ -19,6 +19,12 @@ This project is currently in beta.
 - Plugin system (coming soon)
 - Theme support (coming soon)
 
+core/ – Core logic and services
+
+ui/ – User interface components
+
+data/ – Command definitions and tooltips
+
 ## Requirements
 
 - Python 3.10+
@@ -27,9 +33,3 @@ This project is currently in beta.
 
 ```bash
 python main.py
-
-core/ – Core logic and services
-
-ui/ – User interface components
-
-data/ – Command definitions and tooltips
