@@ -5,10 +5,78 @@ import os
 from core.profile_service import ProfileService
 from core.presets import PRESETS
 from core.cfg_analyzer import parse_cfg, compare_configs
+from core.cfg_stats import get_cfg_stats
+
+
+TOOLTIPS = {
+"rate": "Network bandwidth limit\nRecommended: 30000 - 100000",
+"cl_cmdrate": "Number of command packets sent per second",
+"cl_updaterate": "Updates received per second from server",
+"cl_interp": "Interpolation delay",
+"cl_interp_ratio": "Interpolation ratio multiplier",
+"fps_max": "Maximum FPS limit",
+"mat_queue_mode": "Multithreading mode",
+"cl_forcepreload": "Preload game assets",
+"m_rawinput": "Raw mouse input",
+"m_filter": "Mouse smoothing",
+"sensitivity": "Mouse sensitivity",
+"snd_mixahead": "Sound buffer delay",
+"volume": "Game volume",
+"cl_drawhud": "Enable HUD"
+}
+
+DROPDOWNS = {
+"mat_queue_mode": ["-1", "0", "1", "2"],
+"cl_forcepreload": ["0", "1"],
+"m_rawinput": ["0", "1"],
+"m_filter": ["0", "1"],
+"cl_drawhud": ["0", "1"]
+}
+
+
+class ToolTip:
+
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+        self.tip = None
+        widget.bind("<Enter>", self.show)
+        widget.bind("<Leave>", self.hide)
+
+    def show(self, event=None):
+
+        if self.tip:
+            return
+
+        x = self.widget.winfo_rootx() + 20
+        y = self.widget.winfo_rooty() + 20
+
+        self.tip = tk.Toplevel(self.widget)
+        self.tip.wm_overrideredirect(True)
+        self.tip.wm_geometry(f"+{x}+{y}")
+
+        label = tk.Label(
+            self.tip,
+            text=self.text,
+            background="#ffffe0",
+            relief="solid",
+            borderwidth=1,
+            justify="left"
+        )
+
+        label.pack()
+
+    def hide(self, event=None):
+
+        if self.tip:
+            self.tip.destroy()
+            self.tip = None
 
 
 class AutoexecTab(ttk.Frame):
+
     def __init__(self, parent):
+
         super().__init__(parent)
 
         self.profile_service = ProfileService()
@@ -20,16 +88,19 @@ class AutoexecTab(ttk.Frame):
     def build_ui(self):
 
         profile_frame = ttk.Frame(self)
-        profile_frame.pack(fill="x", pady=5)
+        profile_frame.pack(fill="x", pady=5, padx=5)
 
         ttk.Label(profile_frame, text="Profile:").pack(side="left")
 
         self.profile_var = tk.StringVar()
+
         self.profile_dropdown = ttk.Combobox(
             profile_frame,
             textvariable=self.profile_var,
-            values=self.profile_service.list_profiles()
+            values=self.profile_service.list_profiles(),
+            width=25
         )
+
         self.profile_dropdown.pack(side="left", padx=5)
         self.profile_dropdown.bind("<<ComboboxSelected>>", self.switch_profile)
 
@@ -37,77 +108,117 @@ class AutoexecTab(ttk.Frame):
         ttk.Button(profile_frame, text="Delete", command=self.delete_profile).pack(side="left")
 
         preset_frame = ttk.Frame(self)
-        preset_frame.pack(fill="x", pady=5)
+        preset_frame.pack(fill="x", pady=5, padx=5)
 
         ttk.Label(preset_frame, text="Preset:").pack(side="left")
 
         self.preset_var = tk.StringVar()
+
         preset_dropdown = ttk.Combobox(
             preset_frame,
             textvariable=self.preset_var,
-            values=list(PRESETS.keys())
+            values=list(PRESETS.keys()),
+            width=25
         )
+
         preset_dropdown.pack(side="left", padx=5)
         preset_dropdown.bind("<<ComboboxSelected>>", self.apply_preset)
 
         config_frame = ttk.Frame(self)
-        config_frame.pack(fill="both", expand=True)
+        config_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
-        default_keys = [
+        left_frame = ttk.Frame(config_frame)
+        left_frame.pack(side="left", fill="both", expand=True, padx=10)
+
+        right_frame = ttk.Frame(config_frame)
+        right_frame.pack(side="left", fill="both", expand=True, padx=10)
+
+        left_keys = [
             "rate", "cl_cmdrate", "cl_updaterate",
             "cl_interp", "cl_interp_ratio",
-            "fps_max", "mat_queue_mode", "cl_forcepreload",
-            "m_rawinput", "m_filter", "sensitivity",
-            "snd_mixahead", "volume", "cl_drawhud"
+            "fps_max", "mat_queue_mode"
         ]
 
-        for key in default_keys:
-            row = ttk.Frame(config_frame)
-            row.pack(fill="x", pady=2)
+        right_keys = [
+            "cl_forcepreload",
+            "m_rawinput", "m_filter", "sensitivity",
+            "snd_mixahead", "volume",
+            "cl_drawhud"
+        ]
 
-            ttk.Label(row, text=key, width=20).pack(side="left")
+        for key in left_keys:
+            self.create_entry(left_frame, key)
 
-            var = tk.StringVar()
-            entry = ttk.Entry(row, textvariable=var)
-            entry.pack(side="left", fill="x", expand=True)
+        for key in right_keys:
+            self.create_entry(right_frame, key)
 
-            var.trace_add("write", lambda *args: self.update_preview())
+        ttk.Label(self, text="autoexec.cfg Preview:").pack(anchor="w", padx=10)
 
-            self.entries[key] = var
+        self.preview = tk.Text(self, height=10)
+        self.preview.pack(fill="both", expand=True, padx=10, pady=5)
 
-        ttk.Label(self, text="autoexec.cfg Preview:").pack(anchor="w")
-
-        self.preview = tk.Text(self, height=12)
-        self.preview.pack(fill="both", expand=True, pady=5)
+        self.preview.tag_config("cmd", foreground="blue")
+        self.preview.tag_config("value", foreground="green")
 
         button_frame = ttk.Frame(self)
-        button_frame.pack(fill="x", pady=5)
+        button_frame.pack(fill="x", pady=5, padx=10)
 
         ttk.Button(button_frame, text="Save Profile", command=self.save_profile).pack(side="left")
         ttk.Button(button_frame, text="Analyze CFG", command=self.analyze_cfg).pack(side="left")
-
+        ttk.Button(button_frame, text="CFG Stats", command=self.show_stats).pack(side="left")
         ttk.Button(button_frame, text="Import autoexec.cfg", command=self.import_autoexec).pack(side="left")
 
         ttk.Button(button_frame, text="Export autoexec.cfg", command=self.export_autoexec).pack(side="right")
 
+    def create_entry(self, parent, key):
+
+        row = ttk.Frame(parent)
+        row.pack(fill="x", pady=3)
+
+        label = ttk.Label(row, text=key, width=18, anchor="w")
+        label.pack(side="left")
+
+        ToolTip(label, TOOLTIPS.get(key, ""))
+
+        var = tk.StringVar()
+
+        if key in DROPDOWNS:
+
+            entry = ttk.Combobox(row, textvariable=var, values=DROPDOWNS[key], width=12)
+
+        else:
+
+            entry = ttk.Entry(row, textvariable=var, width=14)
+
+        entry.pack(side="left", fill="x", expand=True)
+
+        var.trace_add("write", lambda *args: self.update_preview())
+
+        self.entries[key] = var
+
     def update_preview(self):
 
-        text = ""
+        self.preview.delete("1.0", tk.END)
 
         for key, var in self.entries.items():
+
             value = var.get()
 
             if value:
-                text += f"{key} {value}\n"
 
-        self.preview.delete("1.0", tk.END)
-        self.preview.insert(tk.END, text)
+                start = self.preview.index(tk.END)
+
+                self.preview.insert(tk.END, key, "cmd")
+                self.preview.insert(tk.END, " ")
+                self.preview.insert(tk.END, value, "value")
+                self.preview.insert(tk.END, "\n")
 
     def create_profile(self):
 
         name = tk.simpledialog.askstring("New Profile", "Profile name:")
 
         if name:
+
             self.profile_service.create_profile(name, {})
             self.profile_dropdown["values"] = self.profile_service.list_profiles()
 
@@ -116,6 +227,7 @@ class AutoexecTab(ttk.Frame):
         name = self.profile_var.get()
 
         if name:
+
             self.profile_service.delete_profile(name)
             self.profile_dropdown["values"] = self.profile_service.list_profiles()
 
@@ -125,6 +237,7 @@ class AutoexecTab(ttk.Frame):
         data = self.profile_service.load_profile(name)
 
         for key, var in self.entries.items():
+
             var.set(data.get(key, ""))
 
         self.update_preview()
@@ -134,6 +247,7 @@ class AutoexecTab(ttk.Frame):
         name = self.profile_var.get()
 
         if not name:
+
             messagebox.showerror("Error", "No profile selected")
             return
 
@@ -151,6 +265,7 @@ class AutoexecTab(ttk.Frame):
         for key, value in preset.items():
 
             if key in self.entries:
+
                 self.entries[key].set(value)
 
         self.update_preview()
@@ -170,9 +285,37 @@ class AutoexecTab(ttk.Frame):
         issues = compare_configs(current, reference)
 
         if not issues:
+
             messagebox.showinfo("Analysis", "No issues found")
+
         else:
+
             messagebox.showwarning("Analysis", "\n".join(issues))
+
+    def show_stats(self):
+
+        data = {}
+
+        for key, var in self.entries.items():
+
+            value = var.get()
+
+            if value:
+
+                data[key] = value
+
+        stats = get_cfg_stats(data)
+
+        message = (
+            f"Total commands: {stats['total_commands']}\n"
+            f"Network: {stats['network']}\n"
+            f"Input: {stats['input']}\n"
+            f"Audio: {stats['audio']}\n"
+            f"Graphics: {stats['graphics']}\n"
+            f"Other: {stats['other']}"
+        )
+
+        messagebox.showinfo("CFG Statistics", message)
 
     def import_autoexec(self):
 
@@ -187,7 +330,9 @@ class AutoexecTab(ttk.Frame):
         data = parse_cfg(path)
 
         for key, var in self.entries.items():
+
             if key in data:
+
                 var.set(data[key])
 
         self.update_preview()
@@ -208,6 +353,7 @@ class AutoexecTab(ttk.Frame):
         content = self.preview.get("1.0", tk.END)
 
         with open(path, "w", encoding="utf-8") as f:
+
             f.write(content)
 
         messagebox.showinfo("Exported", "autoexec.cfg exported successfully")
@@ -217,5 +363,6 @@ class AutoexecTab(ttk.Frame):
         profiles = self.profile_service.list_profiles()
 
         if profiles:
+
             self.profile_var.set(profiles[0])
             self.switch_profile()
