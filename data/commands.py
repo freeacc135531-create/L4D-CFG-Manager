@@ -29,15 +29,18 @@ CMD_DATA = {
         ("slot3", "Throwable"),
         ("slot4", "Medkit / Pills"),
         ("slot5", "Utility"),
+        ("slot6", "Custom"),
+        ("slot7", "Custom"),
+        ("slot8", "Custom"),
+        ("slot9", "Custom"),
+        ("slot0", "Custom"),
         ("lastinv", "Last weapon used"),
-        ("drop", "Drop weapon"),
+        ("drop", "Drop weapon (for scripts or modded server"),
         ("invnext", "Next weapon"),
         ("invprev", "Previous weapon"),
     ],
 
     "Communication": [
-        ("say", "Chat message"),
-        ("say_team", "Team chat"),
         ("vocalize SmartLook", "Call out"),
         ("vocalize PlayerHelp", "Call for help"),
         ("vocalize PlayerThanks", "Say thanks"),
@@ -58,7 +61,6 @@ CMD_DATA = {
     "Utility": [
         ("toggleconsole", "Open console"),
         ("jpeg", "Take screenshot"),
-        ("screenshot", "Take screenshot (TGA)"),
         ("incrementvar volume 0 1 0.1", "Increase volume"),
         ("incrementvar volume 0 1 -0.1", "Decrease volume"),
         ("record demo", "Start demo recording"),
@@ -80,26 +82,23 @@ CMD_DATA = {
         ("cl_interp_ratio 2", "Set interp ratio 2"),
     ],
 
-    "Spectator": [
-        ("spec_next", "Next player"),
-        ("spec_prev", "Previous player"),
-        ("spec_mode", "Change spectator mode"),
-        ("spec_player", "Spectate specific player"),
-    ],
-
     "Game Actions": [
-        ("retry", "Reconnect to server"),
         ("disconnect", "Disconnect from server"),
-        ("callvote", "Start vote"),
         ("chooseteam", "Change team"),
         ("spectate", "Join spectator"),
     ],
 
     "Fun / Troll": [
         ("kill", "Suicide"),
-        ("explode", "Explode (cheats)"),
         ("noclip", "Noclip (cheats)"),
         ("sv_cheats 1", "Enable cheats"),
         ("impulse 101", "Give items (cheats)"),
+    ],
+    
+        "Modded Server": [
+        ("say !buy", "Buy menu"),
+        ("say !buy ak", "Buy ak47"),
+        ("say !buy katana", "Buy katana"),
+        ("say !buy molotov", "Buy molotov"),
     ]
 }

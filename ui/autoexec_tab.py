@@ -159,6 +159,9 @@ class AutoexecTab(ttk.Frame):
 
         self.preview.tag_config("cmd", foreground="blue")
         self.preview.tag_config("value", foreground="green")
+        self.preview.tag_config("alias", foreground="purple")
+        self.preview.tag_config("bind", foreground="orange")
+        self.preview.tag_config("wait", foreground="red")
 
         button_frame = ttk.Frame(self)
         button_frame.pack(fill="x", pady=5, padx=10)
@@ -183,11 +186,8 @@ class AutoexecTab(ttk.Frame):
         var = tk.StringVar()
 
         if key in DROPDOWNS:
-
             entry = ttk.Combobox(row, textvariable=var, values=DROPDOWNS[key], width=12)
-
         else:
-
             entry = ttk.Entry(row, textvariable=var, width=14)
 
         entry.pack(side="left", fill="x", expand=True)
@@ -204,14 +204,22 @@ class AutoexecTab(ttk.Frame):
 
             value = var.get()
 
-            if value:
+            if not value:
+                continue
 
-                start = self.preview.index(tk.END)
+            if key == "alias":
+                tag = "alias"
+            elif key == "bind":
+                tag = "bind"
+            elif key == "wait":
+                tag = "wait"
+            else:
+                tag = "cmd"
 
-                self.preview.insert(tk.END, key, "cmd")
-                self.preview.insert(tk.END, " ")
-                self.preview.insert(tk.END, value, "value")
-                self.preview.insert(tk.END, "\n")
+            self.preview.insert(tk.END, key, tag)
+            self.preview.insert(tk.END, " ")
+            self.preview.insert(tk.END, value, "value")
+            self.preview.insert(tk.END, "\n")
 
     def create_profile(self):
 
@@ -237,7 +245,6 @@ class AutoexecTab(ttk.Frame):
         data = self.profile_service.load_profile(name)
 
         for key, var in self.entries.items():
-
             var.set(data.get(key, ""))
 
         self.update_preview()
@@ -247,7 +254,6 @@ class AutoexecTab(ttk.Frame):
         name = self.profile_var.get()
 
         if not name:
-
             messagebox.showerror("Error", "No profile selected")
             return
 
@@ -265,7 +271,6 @@ class AutoexecTab(ttk.Frame):
         for key, value in preset.items():
 
             if key in self.entries:
-
                 self.entries[key].set(value)
 
         self.update_preview()
@@ -277,20 +282,39 @@ class AutoexecTab(ttk.Frame):
         if not path:
             return
 
-        current = parse_cfg(path)
+        aliases = 0
+        binds = 0
+        waits = 0
+        commands = 0
 
-        preset_name = self.preset_var.get()
-        reference = PRESETS.get(preset_name, {})
+        with open(path, "r", encoding="utf-8") as f:
 
-        issues = compare_configs(current, reference)
+            for line in f:
 
-        if not issues:
+                line = line.strip()
 
-            messagebox.showinfo("Analysis", "No issues found")
+                if not line:
+                    continue
 
-        else:
+                commands += 1
 
-            messagebox.showwarning("Analysis", "\n".join(issues))
+                if line.startswith("alias"):
+                    aliases += 1
+
+                if line.startswith("bind"):
+                    binds += 1
+
+                if "wait" in line:
+                    waits += 1
+
+        result = (
+            f"Commands: {commands}\n"
+            f"Aliases: {aliases}\n"
+            f"Binds: {binds}\n"
+            f"Wait usage: {waits}"
+        )
+
+        messagebox.showinfo("CFG Analysis", result)
 
     def show_stats(self):
 
@@ -301,7 +325,6 @@ class AutoexecTab(ttk.Frame):
             value = var.get()
 
             if value:
-
                 data[key] = value
 
         stats = get_cfg_stats(data)
@@ -332,7 +355,6 @@ class AutoexecTab(ttk.Frame):
         for key, var in self.entries.items():
 
             if key in data:
-
                 var.set(data[key])
 
         self.update_preview()
@@ -353,7 +375,6 @@ class AutoexecTab(ttk.Frame):
         content = self.preview.get("1.0", tk.END)
 
         with open(path, "w", encoding="utf-8") as f:
-
             f.write(content)
 
         messagebox.showinfo("Exported", "autoexec.cfg exported successfully")
