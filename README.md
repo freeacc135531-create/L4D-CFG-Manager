@@ -35,9 +35,14 @@ data/ – Command definitions and tooltips
 python main.py
 ```
 
-## How to Compile
+## Requirment to Compile
 
 ```bash
 pip install pyinstaller
 ```
-then launch build.bat
+
+## How to Compile
+
+```bash
+pyinstaller main.spec
+```
