@@ -33,3 +33,9 @@ data/ – Command definitions and tooltips
 
 ```bash
 python main.py
+
+## How to Compile
+
+```bash
+pip install pyinstaller
+./build.bat
