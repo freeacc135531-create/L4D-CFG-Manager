@@ -1,3 +1,10 @@
+v0.4
+* fixed plugins system
+* added console logs
+* added commands in binds tab
+* removed useless commands
+* added "help" menu
+
 v0.3
 * added CFG stats
 * added dropdown on some commandes
