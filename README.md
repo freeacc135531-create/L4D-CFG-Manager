@@ -15,9 +15,9 @@ This project is currently in beta.
 - Binds manager
 - Preset system
 - Profile management
-- Script management (coming soon)
-- Plugin system (coming soon)
-- Theme support (coming soon)
+- Script management
+- Plugin system
+- Theme support
 
 core/ – Core logic and services
 
@@ -35,7 +35,7 @@ data/ – Command definitions and tooltips
 python main.py
 ```
 
-## Requirment to Compile
+## Requirements to Compile
 
 ```bash
 pip install pyinstaller
