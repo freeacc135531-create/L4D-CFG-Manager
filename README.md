@@ -25,6 +25,10 @@ ui/ – User interface components
 
 data/ – Command definitions and tooltips
 
+## Plugins
+
+You can install additional plugins by dropping .py files inside the /plugins folder.
+
 ## Requirements
 
 - Python 3.10+
