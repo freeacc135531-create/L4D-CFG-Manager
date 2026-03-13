@@ -107,6 +107,3 @@ If a plugin fails to load, an error will appear:
 [PLUGIN ERROR]
 
 **All plugins are welcome even if it is not perfect or does not work well.**
-
-Enjoy extending the CFG Manager.
-Community plugins are welcome!
