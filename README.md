@@ -47,6 +47,7 @@ pip install pyinstaller
 
 ## How to Compile
 
+Move logo.ico and main.spec in the src folder then write this command in cmd
 ```bash
 pyinstaller main.spec
 ```
