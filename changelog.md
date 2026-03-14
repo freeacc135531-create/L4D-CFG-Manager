@@ -1,3 +1,12 @@
+v0.5
+* improved scripts tab
+* added more commands in autoexec tab
+* added more commands in binds tab
+* scrolable autoexec tab
+* improved profiles system
+* added more tooltips
+* added more dropdowns
+
 v0.4
 * fixed plugins system
 * added console logs
