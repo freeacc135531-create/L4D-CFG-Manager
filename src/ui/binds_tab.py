@@ -1,10 +1,49 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from data.commands import CMD_DATA
 import os
+import json
+
+
+with open("data/commands.json", encoding="utf-8") as f:
+    CMD_DATA = json.load(f)
+    
+with open("data/key_names.json", encoding="utf-8") as f:
+    KEY_NAMES = json.load(f)
+    
+ALL_KEYS = []
+    
+for group in KEY_NAMES.values():
+    ALL_KEYS.extend(group)
 
 
 class BindsTab(ttk.Frame):
+    
+    def show_key_dictionary(self):
+
+        win = tk.Toplevel(self)
+        win.title("Key Names Dictionary")
+        win.geometry("400x400")
+
+        text = tk.Text(win)
+        text.pack(fill="both", expand=True)
+
+        for category, keys in KEY_NAMES.items():
+
+            text.insert("end", f"{category.upper()}\n")
+            text.insert("end", "-"*30 + "\n")
+
+            for k in keys:
+                text.insert("end", f"{k}\n")
+
+            text.insert("end", "\n")
+
+        text.insert("end", f"{category.upper()}\n")
+        text.insert("end", "-"*30 + "\n")
+
+        for k in keys:
+            text.insert("end", f"{k}\n")
+
+        text.insert("end", "\n")
 
     def __init__(self, notebook):
         super().__init__(notebook)
@@ -25,7 +64,12 @@ class BindsTab(ttk.Frame):
 
         self.key_var = tk.StringVar()
 
-        ttk.Entry(form, textvariable=self.key_var, width=10).pack(side="left", padx=5)
+        ttk.Combobox(
+            form,
+            textvariable=self.key_var,
+            values=ALL_KEYS,
+            width=12
+        ).pack(side="left", padx=5)
 
         self.category = ttk.Combobox(form, values=list(CMD_DATA.keys()))
         self.category.pack(side="left", padx=5)
@@ -52,6 +96,11 @@ class BindsTab(ttk.Frame):
         ttk.Button(self, text="Save / Update config.cfg",
                    command=self.save_config).pack(pady=5)
 
+        ttk.Button(
+            form,
+            text="Key Dictionary",
+            command=self.show_key_dictionary
+        ).pack(side="left", padx=5)
 
     def load_config(self):
         path = filedialog.askopenfilename(filetypes=[("CFG files", "*.cfg")])

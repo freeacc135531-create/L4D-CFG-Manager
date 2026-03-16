@@ -53,7 +53,7 @@ class ProfileService:
             "meta": {
                 "name": name,
                 "created": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "version": "0.5"
+                "version": "0.6"
             },
             "config": data
         }
@@ -93,7 +93,7 @@ class ProfileService:
             "meta": {
                 "name": name,
                 "updated": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "version": "0.5"
+                "version": "0.6"
             },
             "config": data
         }

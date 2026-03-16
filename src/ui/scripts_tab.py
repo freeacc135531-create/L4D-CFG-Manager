@@ -123,24 +123,26 @@ class ScriptsTab(ttk.Frame):
 
     def insert_autoexec(self):
 
-        if not self.app:
-            return
-
         script = self.preview.get("1.0", tk.END)
 
         if not script.strip():
             return
 
-
         try:
 
-            autoexec_tab = self.app.tabs.get("autoexec")
+            notebook = self.app.tabControl
 
-            if not autoexec_tab:
-                return
+            for tab_id in notebook.tabs():
 
-            autoexec_tab.preview.insert(tk.END, "\n")
-            autoexec_tab.preview.insert(tk.END, script)
+                tab = notebook.nametowidget(tab_id)
 
-        except Exception:
-            pass
+                if hasattr(tab, "preview"):
+
+                    tab.preview.insert(tk.END, "\n")
+                    tab.preview.insert(tk.END, script)
+
+                    notebook.select(tab_id)
+                    return
+
+        except Exception as e:
+            print("Insert error:", e)

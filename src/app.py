@@ -43,7 +43,7 @@ class L4DConfigApp:
     def show_about(self):
 
         message = (
-            "L4D CFG Manager 0.5\n\n"
+            "L4D CFG Manager 0.6\n\n"
             "Created by: paradox32000\n\n"
             "with the help of: WarHeRo\n\n"
             "L4D CFG Manager is a configuration tool designed to help players\n"
@@ -97,7 +97,7 @@ class L4DConfigApp:
         self.binds_tab = BindsTab(self.tabControl)
         self.tabControl.add(self.binds_tab, text="Binds")
 
-        self.scripts_tab = ScriptsTab(self.tabControl)
+        self.scripts_tab = ScriptsTab(self.tabControl, self)
         self.tabControl.add(self.scripts_tab, text="Scripts")
 
         self.console_tab = ConsoleTab(self.tabControl)

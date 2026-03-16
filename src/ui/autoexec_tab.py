@@ -1,113 +1,22 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import os
+import json
 
 from core.profile_service import ProfileService
 from core.presets import PRESETS
 from core.cfg_analyzer import parse_cfg
 from core.cfg_stats import get_cfg_stats
+from datetime import datetime
 
+with open("data/autoexec_commands.json", encoding="utf-8") as f:
+    AUTOEXEC_COMMANDS = json.load(f)
 
-TOOLTIPS = {
-"rate": "Network bandwidth limit\nRecommended: 30000 - 100000",
-"cl_cmdrate": "Number of command packets sent per second",
-"cl_updaterate": "Updates received per second from server",
-"cl_interp": "Interpolation delay",
-"cl_interp_ratio": "Interpolation ratio multiplier",
-"fps_max": "Maximum FPS limit",
-"mat_queue_mode": "Multithreading mode",
-"cl_forcepreload": "Preload game assets",
-"m_rawinput": "Raw mouse input",
-"m_filter": "Mouse smoothing",
-"sensitivity": "Mouse sensitivity",
-"snd_mixahead": "Sound buffer delay",
-"volume": "Game volume",
-"cl_drawhud": "Enable HUD",
-"cl_showfps": "Display FPS counter",
-"hud_fastswitch": "Fast weapon switching",
-"cl_autohelp": "Enable help tips",
-"cl_timeout": "Server timeout value",
-"net_maxroutable": "Max packet size",
-"cl_predict": "Client prediction",
-"cl_predictweapons": "Weapon prediction",
-"cl_lagcompensation": "Enables lag compensation for the player",
-"sv_region": "0 =  US East, 1 = US West, 2 = South America, 3 = Europe, 4 = Asia, 5 = Australia, 6 = Middle East, 7 = Africa",
-"voice_vox": "Enables voice activation (VOX)",
-"voice_threshold": "Sets the microphone activation threshold level",
-"voice_forcerecord": "Forces voice recording",
-"voice_modenable": "Allows voice communication between player",
-"voice_enable": "Enables or disables voice chat",
-"joystick": "Enables or disables joystick input",
-"sv_pausable": "Allows the server to be paused",
-"sv_consistency": "Ensures client files match the server’s files",
-"cl_crosshair_red": "Sets the red color component of the crosshair",
-"cl_crosshair_green": "Sets the green color component of the crosshair",
-"cl_crosshair_blue": "Sets the blue color component of the crosshair",
-"cl_colorblind": "Enables colorblind mode adjustments",
-"cl_crosshair_thickness": "Controls the thickness of the crosshair lines",
-"cl_crosshair_dynamic": "Enables dynamic crosshair that expands when moving or shooting",
-"cl_crosshair_alpha": "Sets the transparency of the crosshair",
-"crosshair": "Enables or disables the crosshair",
-"c_thirdpersonshoulder": "Enables third-person shoulder camera view",
-"cl_viewmodel_fovsurvivor": "Sets the field of view for the viewmodel (weapon model)",
-"fov_desired": "Sets the player's desired field of view",
-"m_customaccel": "Enables custom mouse acceleration settings",
-"m_mouseaccel1": "First parameter controlling mouse acceleration",
-"m_mouseaccel2": "Second parameter controlling mouse acceleration",
-"m_mousespeed": "Sets Windows mouse acceleration usage",
-"snd_legacy_surround": "Enables legacy surround sound processing.",
-"cl_showpos": "Displays player position and velocity on screen",
-"cc_lang": "Sets the language for closed captions",
-"cc_linger_time": "Duration captions remain visible",
-"cc_predisplay_time": "Time captions appear before the sound event",
-"gameinstructor_enable": "Enables the in-game tutorial instructor system",
-"net_graph": "Displays network performance statistics",
-"net_graphpos": "Sets the screen position of the net_graph display",
-"net_graphheight": "Adjusts vertical offset of the net_graph",
-"net_graphproportionalfont": "Uses proportional fonts in net_graph display",
-"con_enable": "Allows the developer console",
-"net_allow_multicast": "Allows multicast network packets",
-"snd_musicvolume": "Volume level for in-game music"
-}
+with open("data/tooltips.json", encoding="utf-8") as f:
+    TOOLTIPS = json.load(f)
 
-
-DROPDOWNS = {
-"mat_queue_mode": ["-1", "0", "1", "2"],
-"cl_forcepreload": ["0", "1"],
-"m_rawinput": ["0", "1"],
-"m_filter": ["0", "1"],
-"cl_drawhud": ["0", "1"],
-"cl_showfps": ["0", "1"],
-"hud_fastswitch": ["0", "1"],
-"cl_autohelp": ["0", "1"],
-"cl_predict": ["0", "1"],
-"cl_predictweapons": ["0", "1"],
-"cl_lagcompensation": ["0", "1"],
-"net_graph": ["0", "1", "2", "3", "4"],
-"net_graphpos": ["0", "1", "2", "3"],
-"net_graphproportionalfont": ["0", "1"],
-"voice_enable": ["0", "1"],
-"voice_modenable": ["0", "1"],
-"sv_region": ["0", "1", "2", "3", "4", "5", "6", "7"],
-"cc_lang": ["english", "french", "german", "spanish", "italian", "japanese", "korean", "russian"],
-"cl_colorblind": ["0", "1", "2"],
-"sv_consistency": ["0", "1"],
-"crosshair": ["0", "1"],
-"cl_predict": ["0", "1"],
-"cl_predictweapons": ["0", "1"],
-"cl_lagcompensation": ["0", "1"],
-"cl_crosshair_dynamic": ["0", "1"],
-"joystick": ["0", "1"],
-"voice_vox": ["0", "1"],
-"m_customaccel": ["0", "1", "2", "3"],
-"snd_legacy_surround": ["0", "1"],
-"cl_showpos": ["0", "1"],
-"gameinstructor_enable": ["0", "1"],
-"con_enable": ["0", "1"],
-"net_allow_multicast": ["0", "1"],
-"sv_pausable": ["0", "1"]
-}
-
+with open("data/dropdowns.json", encoding="utf-8") as f:
+    DROPDOWNS = json.load(f)
 
 class ToolTip:
 
@@ -156,6 +65,7 @@ class AutoexecTab(ttk.Frame):
 
         self.profile_service = ProfileService()
         self.entries = {}
+        self.full_cfg_text = ""
 
         self.build_ui()
         self.load_initial_profile()
@@ -237,77 +147,12 @@ class AutoexecTab(ttk.Frame):
         right_frame.pack(side="left", fill="both", expand=True, padx=10)
 
 
-        left_keys = [
-            "rate",
-            "cl_cmdrate",
-            "cl_updaterate",
-            "cl_interp",
-            "cl_interp_ratio",
-            "cl_timeout",
-            "net_maxroutable",
-            "cl_predict",
-            "cl_predictweapons",
-            "cl_lagcompensation",
-            "fps_max",
-            "mat_queue_mode",
-            "fov_desired",
-            "cl_viewmodelfovsurvivor",
-            "c_thirdpersonshoulder",
-            "crosshair",
-            "cl_crosshair_alpha",
-            "cl_crosshair_dynamic",
-            "cl_crosshair_thickness",
-            "cl_colorblind",
-            "cl_crosshair_blue",
-            "cl_crosshair_green",
-            "cl_crosshair_red",
-            "sv_consistency",
-            "sv_pausable",
-            "cl_forcepreload",
-            "joystick",
-            "voice_enable",
-            "voice_modenable",
-            "voice_forcerecord",
-            "voice_threshold",
-            "voice_vox"
-        ]
 
+        commands = list(AUTOEXEC_COMMANDS.keys())
 
-        right_keys = [
-            "cl_forcepreload",
-            "m_customaccel",
-            "m_mouseaccel1",
-            "m_mouseaccel2",
-            "m_mousespeed",
-            "m_rawinput",
-            "m_filter",
-            "sensitivity",
-            "snd_mixahead",
-            "volume",
-            "snd_musicvolume",
-            "snd_legacy_surround",
-            "cl_drawhud",
-            "cl_showfps",
-            "hud_fastswitch",
-            "cl_autohelp",
-            "cl_showpos",
-            "cl_autohelp",
-            "cl_showhelp",
-            "cc_lang",
-            "cc_linger_time",
-            "cc_predisplay_time",
-            "gameinstructor_enable",
-            "net_graph",
-            "net_graphpos",
-            "net_graphheight",
-            "net_graphproportionalfont",
-            "sv_region",
-            "cl_lagcompensation",
-            "cl_timeout",
-            "con_enable",
-            "net_allow_multicast"
-        ]
-
+        half = len(commands) // 2
+        left_keys = commands[:half]
+        right_keys = commands[half:]
 
         for key in left_keys:
             self.create_entry(left_frame, key)
@@ -366,6 +211,11 @@ class AutoexecTab(ttk.Frame):
     def update_preview(self):
 
         self.preview.delete("1.0", tk.END)
+
+        if self.full_cfg_text:
+
+            self.preview.insert(tk.END, self.full_cfg_text)
+            return
 
         for key, var in self.entries.items():
 
@@ -516,6 +366,9 @@ class AutoexecTab(ttk.Frame):
         if not path:
             return
 
+        with open(path, "r", encoding="utf-8") as f:
+            self.full_cfg_text = f.read()
+
         data = parse_cfg(path)
 
         for key, var in self.entries.items():
@@ -539,7 +392,8 @@ class AutoexecTab(ttk.Frame):
         if not path:
             return
 
-        content = self.preview.get("1.0", tk.END)
+        content = f"// Generated by L4D CFG Manager - {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n"
+        content += self.preview.get("1.0", tk.END)
 
         with open(path, "w", encoding="utf-8") as f:
             f.write(content)

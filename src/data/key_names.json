@@ -1,0 +1,65 @@
+{
+    "Movement": {
+        "W": "Move Forward",
+        "A": "Move Left",
+        "S": "Move Backward",
+        "D": "Move Right",
+        "SPACE": "Jump",
+        "CTRL": "Crouch",
+        "SHIFT": "Walk"
+    },
+
+    "Mouse": {
+        "MOUSE1": "Left Click",
+        "MOUSE2": "Right Click",
+        "MOUSE3": "Middle Click",
+        "MWHEELUP": "Mouse Wheel Up",
+        "MWHEELDOWN": "Mouse Wheel Down"
+    },
+
+    "Numbers": {
+        "1": "Slot 1",
+        "2": "Slot 2",
+        "3": "Slot 3",
+        "4": "Slot 4",
+        "5": "Slot 5"
+    },
+
+    "Function Keys": {
+        "F1": "Function Key 1",
+        "F2": "Function Key 2",
+        "F3": "Function Key 3",
+        "F4": "Function Key 4",
+        "F5": "Function Key 5",
+        "F6": "Function Key 6",
+        "F7": "Function Key 7",
+        "F8": "Function Key 8",
+        "F9": "Function Key 9",
+        "F10": "Function Key 10",
+        "F11": "Function Key 11",
+        "F12": "Function Key 12"
+    },
+
+    "Numpad": {
+        "KP_HOME": "Numpad 7",
+        "KP_UPARROW": "Numpad 8",
+        "KP_PGUP": "Numpad 9",
+        "KP_LEFTARROW": "Numpad 4",
+        "KP_5": "Numpad 5",
+        "KP_RIGHTARROW": "Numpad 6",
+        "KP_END": "Numpad 1",
+        "KP_DOWNARROW": "Numpad 2",
+        "KP_PGDN": "Numpad 3",
+        "KP_INS": "Numpad 0",
+        "KP_DEL": "Numpad ."
+    },
+
+    "Special": {
+        "TAB": "Scoreboard",
+        "ESCAPE": "Escape Menu",
+        "ENTER": "Enter",
+        "BACKSPACE": "Backspace",
+        "ALT": "Alt",
+        "CAPSLOCK": "Caps Lock"
+    }
+}
