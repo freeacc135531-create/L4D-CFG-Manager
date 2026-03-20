@@ -1,3 +1,9 @@
+## v0.7
+* added profiles system to binds tab
+* added more scripts
+* commands stop deleting everything
+* fixed dark theme
+* 
 ## v0.6
 * all commands appear in the preview when autoexec is imported
 * fixed "insert into autoexec" in scripts tab
@@ -31,7 +37,8 @@
 
 ## v0.1
 * made basic commands for autoexec tab
-* made presets, made profiles system
+* made presets
+* made profiles system
 * made loading existing config in binds tab
 * made save / update config
 * made scripts tab (coming soon)
