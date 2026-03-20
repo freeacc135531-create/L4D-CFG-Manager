@@ -3,7 +3,7 @@
 * added more scripts
 * commands stop deleting everything
 * fixed dark theme
-* 
+
 ## v0.6
 * all commands appear in the preview when autoexec is imported
 * fixed "insert into autoexec" in scripts tab
