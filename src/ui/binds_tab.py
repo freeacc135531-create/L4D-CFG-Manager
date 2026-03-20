@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import os
 import json
+from core.profile_service import ProfileService
 
 
 with open("data/commands.json", encoding="utf-8") as f:
@@ -51,6 +52,7 @@ class BindsTab(ttk.Frame):
         self.loaded_config_path = None
         self.existing_lines = []
 
+        self.profile_service = ProfileService()
         self.create_ui()
 
     def create_ui(self):
@@ -101,6 +103,72 @@ class BindsTab(ttk.Frame):
             text="Key Dictionary",
             command=self.show_key_dictionary
         ).pack(side="left", padx=5)
+        
+        profile_frame = ttk.Frame(self)
+        profile_frame.pack(pady=5)
+
+        ttk.Label(profile_frame, text="Profile:").pack(side="left")
+
+        self.profile_var = tk.StringVar()
+
+        self.profile_dropdown = ttk.Combobox(
+            profile_frame,
+            textvariable=self.profile_var,
+            values=self.profile_service.list_profiles(),
+            width=20
+        )
+        self.profile_dropdown.pack(side="left", padx=5)
+        self.profile_dropdown.bind("<<ComboboxSelected>>", self.load_profile)
+
+        ttk.Button(profile_frame, text="New", command=self.create_profile).pack(side="left")
+        ttk.Button(profile_frame, text="Save", command=self.save_profile).pack(side="left")
+        ttk.Button(profile_frame, text="Delete", command=self.delete_profile).pack(side="left")
+        
+    def save_profile(self):
+        name = self.profile_var.get()
+
+        if not name:
+            messagebox.showerror("Error", "No profile selected")
+            return
+
+        binds = []
+
+        for item in self.tree.get_children():
+            key, cmd = self.tree.item(item)["values"]
+            binds.append({"key": key, "command": cmd})
+
+        data = {"binds": binds}
+
+        self.profile_service.save_profile(name, data)
+
+        messagebox.showinfo("Saved", "Profile saved")
+        
+    def load_profile(self, event=None):
+        name = self.profile_var.get()
+        data = self.profile_service.load_profile(name)
+
+        self.tree.delete(*self.tree.get_children())
+
+        binds = data.get("binds", [])
+
+        for b in binds:
+            self.tree.insert("", "end", values=(b["key"], b["command"]))
+
+        self.update_preview()
+        
+    def create_profile(self):
+        name = tk.simpledialog.askstring("New Profile", "Profile name:")
+
+        if name:
+            self.profile_service.create_profile(name, {"binds": []})
+            self.profile_dropdown["values"] = self.profile_service.list_profiles()
+            
+    def delete_profile(self):
+        name = self.profile_var.get()
+
+        if name:
+            self.profile_service.delete_profile(name)
+            self.profile_dropdown["values"] = self.profile_service.list_profiles()
 
     def load_config(self):
         path = filedialog.askopenfilename(filetypes=[("CFG files", "*.cfg")])

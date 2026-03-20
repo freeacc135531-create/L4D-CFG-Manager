@@ -5,6 +5,7 @@ from ui.autoexec_tab import AutoexecTab
 from ui.binds_tab import BindsTab
 from ui.scripts_tab import ScriptsTab
 from ui.console_tab import ConsoleTab
+from core.theme_manager import ThemeManager
 
 from core.plugin_system import PluginManager
 
@@ -16,6 +17,7 @@ class L4DConfigApp:
         self.root = root
         self.root.title("L4D CFG Manager")
         self.root.geometry("900x700")
+        self.theme_manager = ThemeManager(root)
 
         self._init_menu()
 
@@ -35,6 +37,10 @@ class L4DConfigApp:
 
         help_menu.add_command(label="About", command=self.show_about)
         help_menu.add_command(label="Plugin Development", command=self.show_plugins_help)
+        help_menu.add_command(
+            label="Toggle Theme",
+            command=self.theme_manager.toggle
+        )
 
         menubar.add_cascade(label="Help", menu=help_menu)
 
@@ -43,7 +49,7 @@ class L4DConfigApp:
     def show_about(self):
 
         message = (
-            "L4D CFG Manager 0.6\n\n"
+            "L4D CFG Manager 0.7\n\n"
             "Created by: paradox32000\n\n"
             "with the help of: WarHeRo\n\n"
             "L4D CFG Manager is a configuration tool designed to help players\n"

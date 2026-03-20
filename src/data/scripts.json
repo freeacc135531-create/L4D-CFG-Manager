@@ -1,0 +1,9 @@
+{
+  "Scoreboard NetGraph": "//Netgraph on tab\nalias +scoregraph \"+showscores; net_graph 4\"\nalias -scoregraph \"-showscores; net_graph 0\"\n\nbind TAB +scoregraph\n",
+
+  "Flashlight Spam": "//Flashlight spam script\nalias \"+21\" \"alias 23 +22; +22\"\nalias \"+22\" \"impulse 100; wait; -22\"\nalias \"-22\" \"impulse 100; wait; 23\"\nalias \"23\" \"+22\"\n\nalias \"-21\" \"alias 23 impulse 100;\"\n\nalias \"+31\" \"impulse 100; -21\"\nalias \"-31\" \"32\"\n\nalias \"32\" \"alias -31 +21; wait 20; alias -31 32\"\n\nbind MWHEELUP +31\n",
+
+  "Jump Haymaker": "// JUMP HAYMAKER\nalias +crouchjump \"+jump; +duck; wait 10; -duck;\"\nalias -crouchjump \"-jump; wait 1; -duck;\"\nalias +doubleattack \"+attack2; wait 1; +attack;\"\nalias -doubleattack \"-attack2; wait 1; -attack;\"\nalias +jumphaymaker \"+doubleattack; wait 3; +crouchjump;\"\nalias -jumphaymaker \"-doubleattack; wait 1; -crouchjump;\"\n\nbind \"w\" \"+jumphaymaker\"\n",
+
+  "Fast Melee": "// FAST MELEE\nalias MeleeSwap \"+attack;wait 5;invnext;wait 5;slot2;-attack\"\nalias +MFire \"alias MRepeat_function +MRepeat; +MRepeat\"\nalias -MFire \"alias MRepeat_function stopRepeating\"\nalias MRepeat_function \"+MRepeat\"\nalias +MRepeat \"+attack;wait 10;invnext;wait 10;slot2;-attack;-MRepeat\"\nalias -MRepeat \"wait 46; MRepeat_function\"\nalias stopRepeating \"\"\nalias \"MToggle\" \"MToggleOn\"\nalias \"MToggleOn\" \"+MFire; alias MToggle MToggleOff; play buttons/button14\"\nalias \"MToggleOff\" \"-MFire; alias MToggle MToggleOn; play ui/beep_error01\"\n\nbind \"x\" \"MToggle\"\n"
+}

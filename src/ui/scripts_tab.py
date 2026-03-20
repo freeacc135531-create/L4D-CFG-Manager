@@ -1,36 +1,7 @@
 from tkinter import ttk
 import tkinter as tk
+import json
 
-
-SCRIPTS = {
-
-"Scoreboard NetGraph": """
-//Netgraph on tab
-alias +scoregraph "+showscores; net_graph 4"
-alias -scoregraph "-showscores; net_graph 0"
-bind TAB +scoregraph
-
-""",
-
-
-"Flashlight Spam": """
-//Flashlight spam script
-alias "+21" "alias 23 +22; +22"
-alias "+22" "impulse 100; wait; -22"
-alias "-22" "impulse 100; wait; 23"
-alias "23" "+22"
-
-alias "-21" "alias 23 impulse 100;"
-
-alias "+31" "impulse 100; -21"
-alias "-31" "32"
-
-alias "32" "alias -31 +21; wait 20; alias -31 32"
-
-bind MWHEELUP +31
-
-"""
-}
 
 
 class ScriptsTab(ttk.Frame):
@@ -39,6 +10,8 @@ class ScriptsTab(ttk.Frame):
         super().__init__(notebook)
 
         self.app = app
+        with open("data/scripts.json", "r", encoding="utf-8") as f:
+            self.scripts = json.load(f)
 
         self.build_ui()
 
@@ -59,7 +32,7 @@ class ScriptsTab(ttk.Frame):
         self.script_list = tk.Listbox(left, height=15, width=30)
         self.script_list.pack(fill="y", expand=True)
 
-        for script in SCRIPTS.keys():
+        for script in self.scripts.keys():
             self.script_list.insert(tk.END, script)
 
 
@@ -104,7 +77,7 @@ class ScriptsTab(ttk.Frame):
 
         name = self.script_list.get(selection[0])
 
-        script = SCRIPTS.get(name, "")
+        script = self.scripts.get(name, "")
 
         self.preview.delete("1.0", tk.END)
         self.preview.insert(tk.END, script.strip())
