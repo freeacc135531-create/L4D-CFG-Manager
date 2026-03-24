@@ -10,14 +10,28 @@ This project is currently in beta.
 
 ## Features
 
-- CFG file analyzer
-- Autoexec editor
-- Binds manager
-- Preset system
-- Profile management
-- Script management
-- Plugin system
-- Theme support
+*Autoexec editor*
+
+* 64 predefined commands
+* Scripts generator
+* Glows customizer
+* Import and export autoexec
+* Presets
+* Autoexec preview
+
+*Binds editor*
+
+* 45 commands to bind on any key
+* Predefined keys
+* Import and export config
+
+*Others*
+
+* Plugin system
+* Profile system
+* CFG analyzer
+* CFG stats
+* Theme
 
 core/ – Core logic and services
 
