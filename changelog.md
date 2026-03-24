@@ -1,3 +1,9 @@
+## v0.8
+* added glow tab
+* added color on specific commands in autoexec preview
+* organized tabs
+* fixed commands in preview
+
 ## v0.7
 * added profiles system to binds tab
 * added more scripts
