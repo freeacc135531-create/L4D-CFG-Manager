@@ -5,6 +5,7 @@ from ui.autoexec_tab import AutoexecTab
 from ui.binds_tab import BindsTab
 from ui.scripts_tab import ScriptsTab
 from ui.console_tab import ConsoleTab
+from ui.glow_tab import GlowTab
 from core.theme_manager import ThemeManager
 
 from core.plugin_system import PluginManager
@@ -49,7 +50,7 @@ class L4DConfigApp:
     def show_about(self):
 
         message = (
-            "L4D CFG Manager 0.7\n\n"
+            "L4D CFG Manager 0.8\n\n"
             "Created by: paradox32000\n\n"
             "with the help of: WarHeRo\n\n"
             "L4D CFG Manager is a configuration tool designed to help players\n"
@@ -99,12 +100,15 @@ class L4DConfigApp:
 
         self.autoexec_tab = AutoexecTab(self.tabControl)
         self.tabControl.add(self.autoexec_tab, text="Autoexec")
+        
+        self.scripts_tab = ScriptsTab(self.tabControl, self)
+        self.tabControl.add(self.scripts_tab, text="Scripts")
+        
+        self.glow_tab = GlowTab(self.tabControl, self)
+        self.tabControl.add(self.glow_tab, text="Glow")
 
         self.binds_tab = BindsTab(self.tabControl)
         self.tabControl.add(self.binds_tab, text="Binds")
-
-        self.scripts_tab = ScriptsTab(self.tabControl, self)
-        self.tabControl.add(self.scripts_tab, text="Scripts")
-
+        
         self.console_tab = ConsoleTab(self.tabControl)
         self.tabControl.add(self.console_tab, text="Console")

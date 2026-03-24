@@ -1,0 +1,40 @@
+{
+  "Infected": [
+	"cl_glow_infected_r",
+	"cl_glow_infected_g",
+	"cl_glow_infected_b",
+	"cl_glow_ghost_infected_r",
+	"cl_glow_ghost_infected_g",
+	"cl_glow_ghost_infected_b",
+	"cl_glow_infected_vomit_r",
+	"cl_glow_infected_vomit_g",
+	"cl_glow_infected_vomit_b"
+  ],
+  "Survivors": [
+	"cl_glow_survivor_health_high_r",
+	"cl_glow_survivor_health_high_g",
+	"cl_glow_survivor_health_high_b",
+	"cl_glow_survivor_health_med_r",
+	"cl_glow_survivor_health_med_g",
+	"cl_glow_survivor_health_med_b",
+	"cl_glow_survivor_health_low_r",
+	"cl_glow_survivor_health_low_g",
+	"cl_glow_survivor_health_low_b"
+  ],
+  "Items": [
+	"cl_glow_item_r",
+	"cl_glow_item_g",
+	"cl_glow_item_b",
+	"cl_glow_item_far_r",
+	"cl_glow_item_far_g",
+	"cl_glow_item_far_b"
+  ],
+  "Witch": [
+	"cl_witch_glow_idle_r",
+	"cl_witch_glow_idle_g",
+	"cl_witch_glow_idle_b",
+	"cl_witch_glow_angry_r",
+	"cl_witch_glow_angry_g",
+	"cl_witch_glow_angry_b"
+  ]
+}

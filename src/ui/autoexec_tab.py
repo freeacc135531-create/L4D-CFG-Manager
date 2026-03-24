@@ -59,12 +59,59 @@ class AutoexecTab(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
+        self.preview_lines = []
         self.profile_service = ProfileService()
         self.entries = {}
         self.full_cfg_text = ""
 
         self.build_ui()
         self.load_initial_profile()
+        self.external_lines = []
+        
+    def get_line_tag(self, line):
+        stripped = line.strip()
+
+        if stripped.startswith("//"):
+            return "comment"
+
+        if stripped.startswith("alias"):
+            return "alias"
+
+        if stripped.startswith("bind"):
+            return "bind"
+
+        if stripped.startswith("cl_glow"):
+            return "glow"
+
+        return "default"
+        
+    def render_preview(self, lines):
+        self.preview_lines = lines
+
+        self.preview.config(state="normal")
+        self.preview.delete("1.0", tk.END)
+
+        for line in lines:
+            tag = self.get_line_tag(line)
+            self.preview.insert(tk.END, line + "\n", tag)
+            
+    def set_external_commands(self, lines):
+        content = getattr(self, "preview_lines", []).copy()
+
+        for new_line in lines:
+            cmd = new_line.split()[0]
+
+            found = False
+            for i, line in enumerate(content):
+                if line.strip().startswith(cmd + " "):
+                    content[i] = new_line
+                    found = True
+                    break
+
+            if not found:
+                content.append(new_line)
+
+        self.render_preview(content)
 
     def build_ui(self):
         profile_frame = ttk.Frame(self)
@@ -149,9 +196,14 @@ class AutoexecTab(ttk.Frame):
         ttk.Label(self, text="autoexec.cfg Preview:").pack(anchor="w", padx=10)
 
         self.preview = tk.Text(self, height=10)
+        self.preview.tag_config("alias", foreground="#4FC3F7")
+        self.preview.tag_config("bind", foreground="#FFB74D")
+        self.preview.tag_config("glow", foreground="#81C784")
+        self.preview.tag_config("default", foreground="#E0E0E0")
+        self.preview.tag_config("comment", foreground="#6A6A6A")
         self.preview.configure(
             bg="#2b2b2b",
-            fg="white",
+            fg="#E0E0E0",
             insertbackground="white"
         )
         self.preview.pack(fill="both", expand=True, padx=10, pady=5)
@@ -165,6 +217,7 @@ class AutoexecTab(ttk.Frame):
         ttk.Button(button_frame, text="Import autoexec.cfg", command=self.import_autoexec).pack(side="left")
 
         ttk.Button(button_frame, text="Export autoexec.cfg", command=self.export_autoexec).pack(side="right")
+        
 
     def create_entry(self, parent, key):
         row = ttk.Frame(parent)
@@ -189,7 +242,7 @@ class AutoexecTab(ttk.Frame):
         self.entries[key] = var
 
     def upsert_command(self, command, value):
-        content = self.preview.get("1.0", tk.END).strip().splitlines()
+        content = getattr(self, "preview_lines", []).copy()
 
         new_line = f"{command} {value}"
         found = False
@@ -203,10 +256,7 @@ class AutoexecTab(ttk.Frame):
         if not found:
             content.append(new_line)
 
-        self.preview.delete("1.0", tk.END)
-
-        for line in content:
-            self.preview.insert(tk.END, line + "\n")
+        self.render_preview(content)
 
     def update_preview(self):
         pass
@@ -229,6 +279,15 @@ class AutoexecTab(ttk.Frame):
 
         for key, var in self.entries.items():
             var.set(data.get(key, ""))
+
+        content = []
+
+        for key, value in data.items():
+            if value:
+                content.append(f"{key} {value}")
+
+        self.render_preview(content)
+
 
     def save_profile(self):
         name = self.profile_var.get()
@@ -296,8 +355,8 @@ class AutoexecTab(ttk.Frame):
         with open(path, "r", encoding="utf-8") as f:
             self.full_cfg_text = f.read()
 
-        self.preview.delete("1.0", tk.END)
-        self.preview.insert(tk.END, self.full_cfg_text)
+        lines = self.full_cfg_text.splitlines()
+        self.render_preview(lines)
 
         data = parse_cfg(path)
 
